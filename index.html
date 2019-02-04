@@ -1,80 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Item Manager</title>
-    <link rel="stylesheet" href="https://bootswatch.com/4/simplex/bootstrap.min.css">
-</head>
-<body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="#">Item Manager</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-              
-                <div class="collapse navbar-collapse" id="navbarColor02">
-                  <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                      <a class="nav-link " href="/">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                   
-                  </ul>
-                  <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                  </form>
-                </div>
-              </nav>
+    <link
+      rel="stylesheet"
+      href="https://bootswatch.com/4/simplex/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Item Manager</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarColor02"
+        aria-controls="navbarColor02"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-              <div class="container">
-                  <ul id="items" class="list-group">
+      <div class="collapse navbar-collapse" id="navbarColor02">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link " href="/"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            placeholder="Search"
+          />
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+            Search
+          </button>
+        </form>
+      </div>
+    </nav>
 
-                  </ul>
-              </div>
+    <div class="container">
+      <h1>Add Item</h1>
+      <form id="itemform">
+        <div class="form-group">
+          <label for="text">Text</label>
+          <input type="text" name="text" id="text" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="body">Body</label>
+          <textarea name="body" id="body" class="form-control"></textarea>
+        </div>
+        <input type="submit" class="btn btn-primary" />
+      </form>
+      <hr />
+      <ul id="items" class="list-group"></ul>
+    </div>
 
-              <script
-              src="https://code.jquery.com/jquery-1.12.4.js"
-              integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
-              crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-1.12.4.js"
+      integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+      crossorigin="anonymous"
+    ></script>
     <script>
-        // $(document).ready(function(){
-        //     getItems();
-        //     // Get Items from APIs
-        //    function getItems() {
-        //       /* $.ajax({
-        //            type: "GET",
-        //            url:'http://itemmanagerapi.dv/api/items',
+      jQuery(document).ready(function() {
+        //e.preventDefault();
+        getItems();
+        //Submit event
+        $("#itemform").on("submit", function(e) {
+          e.preventDefault();
+          let text = $("#text").val();
+          let body = $("#body").val();
+          addItem(text, body);
+        });
+        //Delete Event
+        $('body').on('click','.deleteLink',function(e){
+            e.preventDefault();
+            let id=$(this).data('id');
+            deleteItem(id);
+            
 
-        //        }).done(function(items){
-        //         console.log(items);
-                
-        //        });*/
-        //        console.log("hello");
-               
-        //    }
-        // });
+        })
+        function getItems() {
+          jQuery.ajax({
+            url: "http://itemmanagerapi.dv/api/items",
+            method: "get",
 
-        jQuery(document).ready(function(){
-               //e.preventDefault();
-              
-               jQuery.ajax({
-                  url: "http://itemmanagerapi.dv/api/items",
-                  method: 'get',
-                  
-                  success: function(result){
-                     let ouput="";
-                     $.each(result,function(key,value){
-                        ouput+=`
+            success: function(result) {
+              let ouput = "";
+              $.each(result, function(key, value) {
+                ouput += `
                         <li class="list-group-item">
-                            <strong>${value.text}</strong>${value.body}
+                            <strong>${value.text}</strong> ${value.body}
+                            <a href="#" class="deleteLink" data-id="${value.id}">delete</a>
                         </li>
                         `;
-                     });
-                     $('#items').append(ouput);
-                  }});
-               });
+              });
+              $("#items").append(ouput);
+            }
+          });
+        }
+
+        function addItem(text, body) {
+          jQuery.ajax({
+            method: "POST",
+            url: "http://itemmanagerapi.dv/api/items",
+            data: {
+                text:text,
+                body:body
+            },
+            success: function(result) {
+              let ouput = "";
+              alert('Item # '+result.id+' added');
+              location.reload();
+            }
+          });
+        }
+        function deleteItem(id) {
+          jQuery.ajax({
+            method: "POST",
+            url: "http://itemmanagerapi.dv/api/items/"+id,
+            data: {
+                _method:'DELETE',
+            },
+            success: function(result) {
+              let ouput = "";
+              alert('Item Removed');
+              location.reload();
+            }
+          });
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
