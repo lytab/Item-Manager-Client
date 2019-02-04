@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Item Manager</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/simplex/bootstrap.min.css">
+</head>
+<body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="#">Item Manager</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              
+                <div class="collapse navbar-collapse" id="navbarColor02">
+                  <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                      <a class="nav-link " href="/">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                   
+                  </ul>
+                  <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                  </form>
+                </div>
+              </nav>
+
+              <div class="container">
+                  <ul id="items" class="list-group">
+
+                  </ul>
+              </div>
+
+              <script
+              src="https://code.jquery.com/jquery-1.12.4.js"
+              integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+              crossorigin="anonymous"></script>
+    <script>
+        // $(document).ready(function(){
+        //     getItems();
+        //     // Get Items from APIs
+        //    function getItems() {
+        //       /* $.ajax({
+        //            type: "GET",
+        //            url:'http://itemmanagerapi.dv/api/items',
+
+        //        }).done(function(items){
+        //         console.log(items);
+                
+        //        });*/
+        //        console.log("hello");
+               
+        //    }
+        // });
+
+        jQuery(document).ready(function(){
+               //e.preventDefault();
+              
+               jQuery.ajax({
+                  url: "http://itemmanagerapi.dv/api/items",
+                  method: 'get',
+                  
+                  success: function(result){
+                     let ouput="";
+                     $.each(result,function(key,value){
+                        ouput+=`
+                        <li class="list-group-item">
+                            <strong>${value.text}</strong>${value.body}
+                        </li>
+                        `;
+                     });
+                     $('#items').append(ouput);
+                  }});
+               });
+    </script>
+</body>
+</html>
